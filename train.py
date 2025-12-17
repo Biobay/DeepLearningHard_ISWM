@@ -129,8 +129,7 @@ def train():
         optimizer, 
         mode='min', 
         factor=0.5,  # Dimezza LR
-        patience=5,  # Aspetta 5 epoche senza miglioramenti
-        verbose=True
+        patience=5  # Aspetta 5 epoche senza miglioramenti
     )
     
     # Tensorboard per visualizzare training
