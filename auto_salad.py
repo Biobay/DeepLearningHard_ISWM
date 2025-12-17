@@ -18,7 +18,7 @@ from pathlib import Path
 # ============ CONFIGURAZIONE ============
 REPO_URL = "https://github.com/Biobay/DeepLearningHard_ISWM.git"
 KAGGLE_DATASET = "lakshaymiddha/crack-segmentation-dataset"  # Dataset Kaggle
-KAGGLE_USERNAME = "mariobusiness112@gmail.com"  # Sostituisci con tuo username Kaggle
+KAGGLE_USERNAME = "mariomastrulli"  # Sostituisci con tuo username Kaggle
 KAGGLE_KEY = "salad_cloud_user_WQuzJnYHf1ELT1awJ5gjpBU7JKKwITxrYcRwcAsYsfb4AY1WNY"  # Sostituisci con tua API key Kaggle
 
 WORKSPACE = "/workspace"
