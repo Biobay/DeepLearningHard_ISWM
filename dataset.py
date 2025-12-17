@@ -9,6 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from torchvision import transforms
 import glob
+from config import IMAGE_SIZE
 
 class CrackImageDataset(Dataset):
     """
@@ -98,9 +99,9 @@ class CrackTestDataset(Dataset):
         # Trasformazioni
         if self.transform:
             image = self.transform(image)
-            # Maschera: solo resize e to tensor
+            # Maschera: solo resize e to tensor (usa IMAGE_SIZE da config)
             mask = transforms.Compose([
-                transforms.Resize((128, 128)),
+                transforms.Resize(IMAGE_SIZE),
                 transforms.ToTensor()
             ])(mask)
         
@@ -116,9 +117,10 @@ def get_data_transforms():
     """
     Definisce le trasformazioni per preprocessing immagini.
     Normalizzazione standard per reti neurali.
+    Usa IMAGE_SIZE da config.py (128x128 o 256x256).
     """
     transform = transforms.Compose([
-        transforms.Resize((128, 128)),  # Resize a dimensione fissa
+        transforms.Resize(IMAGE_SIZE),  # Resize da config
         transforms.ToTensor(),  # Converte in tensor [0,1]
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],  # Normalizzazione ImageNet standard
