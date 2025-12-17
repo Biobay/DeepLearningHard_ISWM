@@ -104,7 +104,8 @@ def inference():
     
     # Carica modello addestrato
     print(f"\nCaricamento modello da {BEST_MODEL_PATH}...")
-    model = get_model(device=device, latent_dim=LATENT_DIM)
+    img_size = IMAGE_SIZE[0]
+    model = get_model(device=device, latent_dim=LATENT_DIM, image_size=img_size)
     model.load_state_dict(torch.load(BEST_MODEL_PATH, map_location=device))
     model.eval()  # Modalità evaluation
     print("Modello caricato con successo!")

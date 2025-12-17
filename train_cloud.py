@@ -105,7 +105,8 @@ def train(resume=False):
     
     # Crea modello
     print("\nCreazione modello...")
-    model = get_model(device=device, latent_dim=LATENT_DIM)
+    img_size = IMAGE_SIZE[0]
+    model = get_model(device=device, latent_dim=LATENT_DIM, image_size=img_size)
     
     # Loss e optimizer
     criterion = nn.MSELoss()

@@ -177,7 +177,8 @@ def train():
     
     # Crea modello
     print("\nCreazione modello...")
-    model = get_model(device=device, latent_dim=LATENT_DIM)
+    img_size = IMAGE_SIZE[0]  # Prendi dimensione da config
+    model = get_model(device=device, latent_dim=LATENT_DIM, image_size=img_size)
     
     # Loss function: MSE + SSIM combinata
     # MSE per differenze pixel-wise, SSIM per strutture percettive
