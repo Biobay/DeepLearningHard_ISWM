@@ -4,7 +4,7 @@ Script di training per Convolutional Autoencoder.
 Strategia:
 1. Carica SOLO le immagini (no maschere)
 2. Addestra l'autoencoder a ricostruire le immagini
-3. Loss = MSE tra input e output (Mean Squared Error)
+3. Loss = MSE + SSIM (Structural Similarity) per migliore percezione
 4. Salva il modello migliore
 """
 
@@ -15,10 +15,72 @@ from torch.utils.tensorboard import SummaryWriter
 import os
 from tqdm import tqdm
 import numpy as np
+import torch.nn.functional as F
 
 from model import get_model
 from dataset import get_train_loader
 from config import *
+
+
+class SSIMLoss(nn.Module):
+    """SSIM Loss per migliore percezione delle strutture."""
+    def __init__(self, window_size=11, size_average=True):
+        super(SSIMLoss, self).__init__()
+        self.window_size = window_size
+        self.size_average = size_average
+        self.channel = 3
+        self.window = self._create_window(window_size, self.channel)
+        
+    def _gaussian(self, window_size, sigma):
+        gauss = torch.Tensor([np.exp(-(x - window_size//2)**2/float(2*sigma**2)) for x in range(window_size)])
+        return gauss/gauss.sum()
+    
+    def _create_window(self, window_size, channel):
+        _1D_window = self._gaussian(window_size, 1.5).unsqueeze(1)
+        _2D_window = _1D_window.mm(_1D_window.t()).float().unsqueeze(0).unsqueeze(0)
+        window = _2D_window.expand(channel, 1, window_size, window_size).contiguous()
+        return window
+    
+    def forward(self, img1, img2):
+        (_, channel, _, _) = img1.size()
+        
+        if self.window.device != img1.device:
+            self.window = self.window.to(img1.device)
+        
+        mu1 = F.conv2d(img1, self.window, padding=self.window_size//2, groups=channel)
+        mu2 = F.conv2d(img2, self.window, padding=self.window_size//2, groups=channel)
+        
+        mu1_sq = mu1.pow(2)
+        mu2_sq = mu2.pow(2)
+        mu1_mu2 = mu1 * mu2
+        
+        sigma1_sq = F.conv2d(img1*img1, self.window, padding=self.window_size//2, groups=channel) - mu1_sq
+        sigma2_sq = F.conv2d(img2*img2, self.window, padding=self.window_size//2, groups=channel) - mu2_sq
+        sigma12 = F.conv2d(img1*img2, self.window, padding=self.window_size//2, groups=channel) - mu1_mu2
+        
+        C1 = 0.01**2
+        C2 = 0.03**2
+        
+        ssim_map = ((2*mu1_mu2 + C1)*(2*sigma12 + C2)) / ((mu1_sq + mu2_sq + C1)*(sigma1_sq + sigma2_sq + C2))
+        
+        if self.size_average:
+            return 1 - ssim_map.mean()  # 1 - SSIM per minimizzare
+        else:
+            return 1 - ssim_map.mean(1).mean(1).mean(1)
+
+
+class CombinedLoss(nn.Module):
+    """Combinazione di MSE e SSIM Loss."""
+    def __init__(self, alpha=0.5):
+        super(CombinedLoss, self).__init__()
+        self.mse = nn.MSELoss()
+        self.ssim = SSIMLoss()
+        self.alpha = alpha  # peso tra MSE e SSIM
+    
+    def forward(self, pred, target):
+        mse_loss = self.mse(pred, target)
+        ssim_loss = self.ssim(pred, target)
+        return self.alpha * mse_loss + (1 - self.alpha) * ssim_loss
 
 def denormalize(tensor):
     """
@@ -117,9 +179,9 @@ def train():
     print("\nCreazione modello...")
     model = get_model(device=device, latent_dim=LATENT_DIM)
     
-    # Loss function: MSE (Mean Squared Error)
-    # Penalizza la differenza quadratica media tra pixel
-    criterion = nn.MSELoss()
+    # Loss function: MSE + SSIM combinata
+    # MSE per differenze pixel-wise, SSIM per strutture percettive
+    criterion = CombinedLoss(alpha=0.5)  # 50% MSE, 50% SSIM
     
     # Optimizer: Adam (adaptive learning rate)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)

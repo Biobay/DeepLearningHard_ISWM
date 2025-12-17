@@ -57,40 +57,43 @@ class ConvAutoencoder(nn.Module):
         
         # ============ BOTTLENECK (Latent Space) ============
         # Rappresentazione compressa dell'immagine
-        # 4x4x512 = 8192 features -> latent_dim
+        # Per IMAGE_SIZE 256x256: 8x8x512 = 32768 features -> latent_dim
+        # Per IMAGE_SIZE 128x128: 4x4x512 = 8192 features -> latent_dim
         
         self.flatten = nn.Flatten()
-        self.fc_encode = nn.Linear(512 * 4 * 4, latent_dim)
+        # Calcolo dinamico della dimensione del flatten
+        self.bottleneck_size = 512 * 8 * 8  # Per 256x256 input
+        self.fc_encode = nn.Linear(self.bottleneck_size, latent_dim)
         
         # Decompressione dal latent space
-        self.fc_decode = nn.Linear(latent_dim, 512 * 4 * 4)
-        self.unflatten = nn.Unflatten(1, (512, 4, 4))
+        self.fc_decode = nn.Linear(latent_dim, self.bottleneck_size)
+        self.unflatten = nn.Unflatten(1, (512, 8, 8))
         
         # ============ DECODER ============
         # Ricostruisce l'immagine: 4x4 -> 128x128
         
         self.decoder = nn.Sequential(
-            # Layer 1: 4x4x512 -> 8x8x256
+            # Layer 1: 8x8x512 -> 16x16x256
             nn.ConvTranspose2d(512, 256, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(inplace=True),
             
-            # Layer 2: 8x8x256 -> 16x16x128
+            # Layer 2: 16x16x256 -> 32x32x128
             nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
             
-            # Layer 3: 16x16x128 -> 32x32x64
+            # Layer 3: 32x32x128 -> 64x64x64
             nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
             
-            # Layer 4: 32x32x64 -> 64x64x32
+            # Layer 4: 64x64x64 -> 128x128x32
             nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
             
-            # Layer 5 (finale): 64x64x32 -> 128x128x3
+            # Layer 5 (finale): 128x128x32 -> 256x256x3
             nn.ConvTranspose2d(32, 3, kernel_size=3, stride=2, padding=1, output_padding=1),
             nn.Sigmoid()  # Output [0,1] per immagini
         )

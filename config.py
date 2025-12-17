@@ -6,13 +6,13 @@ TEST_IMAGES_PATH = 'dataset/test/images/'
 TEST_MASKS_PATH = 'dataset/test/masks/'
 
 # Parametri immagini
-IMAGE_SIZE = (128, 128)  # Ridimensionamento per velocizzare training
+IMAGE_SIZE = (256, 256)  # Risoluzione maggiore per dettagli crepe
 INPUT_CHANNELS = 3  # RGB
-BATCH_SIZE = 32
-NUM_EPOCHS = 50
+BATCH_SIZE = 16  # Ridotto per gestire immagini più grandi
+NUM_EPOCHS = 100  # Più epoche per convergenza
 
 # Parametri architettura autoencoder
-LATENT_DIM = 128  # Dimensione del bottleneck (latent space)
+LATENT_DIM = 512  # Bottleneck più grande per preservare dettagli
 
 # Parametri training
 LEARNING_RATE = 0.001
