@@ -141,7 +141,7 @@ def get_train_loader(train_images_dir, batch_size=32):
         train_dataset,
         batch_size=batch_size,
         shuffle=True,  # Shuffle per training
-        num_workers=2,  # Ridotto per evitare problemi shared memory su cloud
+        num_workers=0,  # Disabilita parallelizzazione (risolve bus error su cloud)
         pin_memory=True  # Velocizza transfer GPU
     )
     
@@ -159,7 +159,7 @@ def get_test_loader(test_images_dir, test_masks_dir, batch_size=32):
         test_dataset,
         batch_size=batch_size,
         shuffle=False,  # No shuffle per test
-        num_workers=2,  # Ridotto per cloud
+        num_workers=0,  # Disabilita parallelizzazione
         pin_memory=True
     )
     

@@ -8,7 +8,7 @@ TEST_MASKS_PATH = 'dataset/test/masks/'
 # Parametri immagini
 IMAGE_SIZE = (256, 256)  # Risoluzione maggiore per dettagli crepe
 INPUT_CHANNELS = 3  # RGB
-BATCH_SIZE = 16  # Ridotto per gestire immagini più grandi
+BATCH_SIZE = 8  # Ridotto per memoria GPU limitata su cloud
 NUM_EPOCHS = 100  # Più epoche per convergenza
 
 # Parametri architettura autoencoder
