@@ -58,7 +58,7 @@ def apply_threshold(anomaly_map, threshold=0.1):
     binary_mask = (anomaly_map > threshold).float()
     return binary_mask
 
-def post_process_mask(mask, min_area=50):
+def post_process_mask(mask, min_area=200):
     """
     Post-processing della maschera per rimuovere rumore.
     
@@ -72,9 +72,13 @@ def post_process_mask(mask, min_area=50):
     # Converti in uint8
     mask_uint8 = (mask * 255).astype(np.uint8)
     
-    # Morfologia: chiusura (riempie piccoli buchi)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    mask_closed = cv2.morphologyEx(mask_uint8, cv2.MORPH_CLOSE, kernel)
+    # Morfologia: apertura (rimuove piccoli puntini)
+    kernel_open = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    mask_opened = cv2.morphologyEx(mask_uint8, cv2.MORPH_OPEN, kernel_open)
+    
+    # Morfologia: chiusura (riempie piccoli buchi e connette)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+    mask_closed = cv2.morphologyEx(mask_opened, cv2.MORPH_CLOSE, kernel)
     
     # Rimuovi piccole componenti connesse
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask_closed, connectivity=8)
@@ -132,9 +136,9 @@ def inference():
             # Applica threshold per binarizzare
             binary_mask = apply_threshold(anomaly_map, threshold=ANOMALY_THRESHOLD)
             
-            # Post-processing (opzionale)
+            # Post-processing (rimuove rumore)
             mask_np = binary_mask.squeeze().cpu().numpy()
-            mask_cleaned = post_process_mask(mask_np, min_area=50)
+            mask_cleaned = post_process_mask(mask_np, min_area=200)
             
             # Salva maschera predetta
             filename = filenames[0]

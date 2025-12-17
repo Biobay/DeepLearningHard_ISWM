@@ -19,7 +19,7 @@ LEARNING_RATE = 0.001
 DEVICE = 'cuda'  # Cambierà automaticamente a 'cpu' se GPU non disponibile
 
 # Parametri anomaly detection
-ANOMALY_THRESHOLD = 0.1  # Threshold per binarizzare la differenza (regolabile dopo esperimenti)
+ANOMALY_THRESHOLD = 0.3  # Threshold per binarizzare la differenza (regolabile dopo esperimenti)
 
 # Salvataggio modelli
 MODEL_SAVE_PATH = 'models/'
