@@ -8,8 +8,8 @@ TEST_MASKS_PATH = 'dataset/test/masks/'
 # Parametri immagini
 IMAGE_SIZE = (256, 256)  # Risoluzione maggiore per dettagli crepe
 INPUT_CHANNELS = 3  # RGB
-BATCH_SIZE = 8  # Ridotto per memoria GPU limitata su cloud
-NUM_EPOCHS = 100  # Più epoche per convergenza
+BATCH_SIZE = 64  # Ottimizzato per RTX 3090 (24GB VRAM)
+NUM_EPOCHS = 50  # Ridotte - con batch più grandi converge prima
 
 # Parametri architettura autoencoder
 LATENT_DIM = 512  # Bottleneck più grande per preservare dettagli
