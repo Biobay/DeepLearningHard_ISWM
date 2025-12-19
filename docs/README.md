@@ -21,17 +21,3 @@ Our main idea is When we subtract the Reconstructed Image from the Original Imag
 
 --> The "Pred" is too noisy (as of 18/12/25) The final image on the right (Prediction) is a mess. It sees the crack, but it also sees "static" (noise) everywhere else.
 
-## Some Loss functions used:
-### Mean Squared Error (MSE): 
-For Pixel colors in the reconstructed image match the original.
-
-### Structural Similarity Index (SSIM)
-SSIM evaluates whether the **structural information** (such as asphalt texture) is preserved rather than relying solely on raw pixel values.  
-This allows the model to ignore lighting variations while detecting **physical cracks**.
-
-### Anomaly Score (Inference)
-
-**Binary Mask:**
-  Mask = 1 if M_anom > T  
-  Mask = 0 otherwise
-
