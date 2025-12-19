@@ -19,6 +19,9 @@ def train():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
+    # Créer le dossier models s'il n'existe pas
+    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+    
     print(f"Loading data from: {TRAIN_IMAGES_PATH}")
     loader = get_loader(TRAIN_IMAGES_PATH, TRAIN_MASKS_PATH, BATCH_SIZE, is_train=True)
     

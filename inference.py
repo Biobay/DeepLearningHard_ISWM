@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 def inference():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     os.makedirs(PREDICTIONS_PATH, exist_ok=True)
+    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
     
     model = get_model(device=device, latent_dim=LATENT_DIM, image_size=IMAGE_SIZE[0])
     if os.path.exists(BEST_MODEL_PATH):
