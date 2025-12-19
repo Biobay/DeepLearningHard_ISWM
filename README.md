@@ -11,10 +11,40 @@ Our main idea is When we subtract the Reconstructed Image from the Original Imag
 | Train.py     | Done    | Sets up the training loop using  CombinedLoss (MSE + SSIM). This is a smart choice because SSIM (Structural Similarity) prevents the reconstruction from becoming too blurry, which is common with just MSE. |
 | Inference.py | Done    | Implements the logic:  Anomaly Map = abs(Input - Output). It also includes morphological post-processing (opening/closing) to clean up noise.                                                                |
 | Dataset.py   | Done    | Handles loading images (implied).                                                                                                                                                                            |
-| Evaluate.py  | Pending | Mentioned in main.py but the code wasn't pasted. This is critical for determining the optimal threshold.                                                                                                     |
+| Evaluate.py  | Pending |                                                                                                      |
 
 
 Some Loss functions used:
-MSE (Mean Squared Error):$$L_{MSE} = \frac{1}{N} \sum_{i=1}^{N} (x_i - \hat{x}_i)^2$$Ensures pixel colors match.
-SSIM (Structural Similarity Index):Checks if the structure (texture of the asphalt) is preserved, rather than just raw pixel values. This helps the model ignore lighting changes but notice physical cracks.
-Anomaly Score (Inference):$$M_{anom} = | X_{input} - X_{reconstructed} |$$$$Mask = \begin{cases} 1 & \text{if } M_{anom} > T \\ 0 & \text{otherwise} \end{cases}$$
+### Mean Squared Error (MSE)
+
+\[
+L_{\text{MSE}} = \frac{1}{N} \sum_{i=1}^{N} (x_i - \hat{x}_i)^2
+\]
+
+Ensures pixel colors match between the input and reconstructed image.
+
+---
+
+### Structural Similarity Index (SSIM)
+
+SSIM checks whether the **structural information** (e.g., texture of the asphalt) is preserved rather than comparing raw pixel values.  
+This helps the model remain robust to lighting changes while still detecting **physical defects such as cracks**.
+
+---
+
+### Anomaly Score (Inference)
+
+\[
+M_{\text{anom}} = \lvert X_{\text{input}} - X_{\text{reconstructed}} \rvert
+\]
+
+\[
+\text{Mask} =
+\begin{cases}
+1 & \text{if } M_{\text{anom}} > T \\
+0 & \text{otherwise}
+\end{cases}
+\]
+
+Pixels with anomaly scores above the threshold \(T\) are classified as anomalous.
+
