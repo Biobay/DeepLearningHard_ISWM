@@ -13,8 +13,11 @@ Our main idea is When we subtract the Reconstructed Image from the Original Imag
 | Dataset.py   | Done    | Handles loading images (implied).                                                                                                                                                                            |
 | Evaluate.py  | Pending |                                                                                                      |
 
+## Some Initial Predictions:
+<img width="982" height="405" alt="image" src="https://github.com/user-attachments/assets/e8497d25-9865-4fce-9d45-ae9122a4ea11" />
+--> The "Pred" is too noisy (as of 18/12/25) The final image on the right (Prediction) is a mess. It sees the crack, but it also sees "static" (noise) everywhere else.
 
-# Some Loss functions used:
+## Some Loss functions used:
 ### Mean Squared Error (MSE): 
 For Pixel colors in the reconstructed image match the original.
 
