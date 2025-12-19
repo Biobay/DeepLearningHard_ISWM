@@ -15,34 +15,16 @@ Our main idea is When we subtract the Reconstructed Image from the Original Imag
 
 
 Some Loss functions used:
-### Mean Squared Error (MSE)
-**Formula:**
-
-L_MSE = (1 / N) * Σ (x_i − x̂_i)²
-
-**Description:**
-
-Ensures pixel colors in the reconstructed image match the original.
-
----
+### Mean Squared Error (MSE): 
+For Pixel colors in the reconstructed image match the original.
 
 ### Structural Similarity Index (SSIM)
-
-**Description:**
-
 SSIM evaluates whether the **structural information** (such as asphalt texture) is preserved rather than relying solely on raw pixel values.  
 This allows the model to ignore lighting variations while detecting **physical cracks**.
 
----
-
 ### Anomaly Score (Inference)
 
-**Formula:**
-
-M_anom = |X_input − X_reconstructed|
-
 **Binary Mask:**
-
-Mask = 1 if M_anom > T  
-Mask = 0 otherwise
+  Mask = 1 if M_anom > T  
+  Mask = 0 otherwise
 
