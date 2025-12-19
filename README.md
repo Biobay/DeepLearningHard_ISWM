@@ -14,7 +14,7 @@ Our main idea is When we subtract the Reconstructed Image from the Original Imag
 | Evaluate.py  | Pending |                                                                                                      |
 
 
-Some Loss functions used:
+# Some Loss functions used:
 ### Mean Squared Error (MSE): 
 For Pixel colors in the reconstructed image match the original.
 
