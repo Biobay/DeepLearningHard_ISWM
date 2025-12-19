@@ -1,4 +1,3 @@
-# DeepLearningHard_ISWM
 Project Aim: hard - image segmentation without mask 5.0 at most https://www.kaggle.com/competitions/dl-2025-project-2-pro
 
 So, we are using an Unsupervised Anomaly Detection approach via a Convolutional Autoencoder (CAE). We Trained a Neural network to become an expert at reconstructing perfect, clean asphalt. When we show it a crack later (inference), It won't know how to reconstruct the crack because it never learned it. It will try to "fix" the crack (reconstruct it as smooth pavement).
