@@ -15,8 +15,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 from model import get_model
-from dataset import get_test_loader
-from inference import compute_anomaly_map, apply_threshold
+from dataset import get_loader
 from config import *
 
 def calculate_iou(pred, target, smooth=1e-8):
@@ -120,7 +119,7 @@ def evaluate_model(threshold=ANOMALY_THRESHOLD):
     
     # Carica test set
     print(f"\nCaricamento test set...")
-    test_loader = get_test_loader(TEST_IMAGES_PATH, TEST_MASKS_PATH, batch_size=8)
+    test_loader = get_loader(TEST_IMAGES_PATH, TEST_MASKS_PATH, batch_size=8, is_train=False)
     
     print(f"\n{'='*50}")
     print(f"Evaluation - Threshold: {threshold}")
@@ -142,8 +141,10 @@ def evaluate_model(threshold=ANOMALY_THRESHOLD):
             reconstructed = model(images)
             
             # Anomaly detection
-            anomaly_map = compute_anomaly_map(images, reconstructed)
-            binary_pred = apply_threshold(anomaly_map, threshold=threshold)
+            # Calcul de la carte d'anomalie
+            diff = torch.abs(images - reconstructed).mean(dim=1, keepdim=True)
+            diff = (diff - diff.min()) / (diff.max() - diff.min() + 1e-8)
+            binary_pred = (diff > threshold).float()
             
             # Converti in numpy
             pred_np = binary_pred.cpu().numpy()
@@ -215,11 +216,12 @@ def find_best_threshold():
     """
     # Setup
     device = torch.device(DEVICE if torch.cuda.is_available() else 'cpu')
-    model = get_model(device=device, latent_dim=LATENT_DIM)
+    img_size = IMAGE_SIZE[0]
+    model = get_model(device=device, latent_dim=LATENT_DIM, image_size=img_size)
     model.load_state_dict(torch.load(BEST_MODEL_PATH, map_location=device))
     model.eval()
     
-    test_loader = get_test_loader(TEST_IMAGES_PATH, TEST_MASKS_PATH, batch_size=8)
+    test_loader = get_loader(TEST_IMAGES_PATH, TEST_MASKS_PATH, batch_size=8, is_train=False)
     
     # Test diversi threshold
     thresholds = np.linspace(0.01, 0.5, 20)
@@ -237,8 +239,10 @@ def find_best_threshold():
                 images = images.to(device)
                 
                 reconstructed = model(images)
-                anomaly_map = compute_anomaly_map(images, reconstructed)
-                binary_pred = apply_threshold(anomaly_map, threshold=threshold)
+                # Calcul de la carte d'anomalie
+                diff = torch.abs(images - reconstructed).mean(dim=1, keepdim=True)
+                diff = (diff - diff.min()) / (diff.max() - diff.min() + 1e-8)
+                binary_pred = (diff > threshold).float()
                 
                 pred_np = binary_pred.cpu().numpy()
                 target_np = masks.cpu().numpy()
